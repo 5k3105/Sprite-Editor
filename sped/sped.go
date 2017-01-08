@@ -103,7 +103,7 @@ func NewSpriteEditor() *SpriteEditor  {
 	}
 	
 
-func NewSpriteCell(parent *SpriteEditor, idx int) *widgets.QGraphicsWidget {
+func NewSpriteCell(parent *SpriteEditor, idx int) *SpriteCell { //*widgets.QGraphicsWidget {
 
 	sc := &SpriteCell{
 	QGraphicsWidget: widgets.NewQGraphicsWidget(nil, 0), // parent, 0) // type widget
@@ -115,7 +115,7 @@ func NewSpriteCell(parent *SpriteEditor, idx int) *widgets.QGraphicsWidget {
 	sc.ConnectHoverEnterEvent(sc.HoverEnter)
 	sc.ConnectHoverLeaveEvent(sc.HoverLeave)
 
-	return sc.QGraphicsWidget
+	return sc //.QGraphicsWidget
 }
 
 // sprite cell

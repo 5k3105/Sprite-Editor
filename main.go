@@ -34,7 +34,7 @@ func main() {
 	var spcan = sped.NewSpriteCanvas() // window
 	dsped.SetWidget(spcan.View)
 	
-	ConnectSpriteEvents(spcan)
+	//ConnectSpriteEvents(spcan)
 
 	// full color pallete panel
 	var dfcp = widgets.NewQDockWidget("Full Color Pallete", window, 0)
@@ -59,7 +59,7 @@ func ConnectSpriteEvents(spcan *sped.SpriteCanvas) {
 	for it.Next() {
 		sc := it.Value().(*sped.SpriteCell)
 		
-		sc.QGraphicsWidget.ConnectMousePressEvent(SpriteCellClick(sc))
+		sc.ConnectMousePressEvent(SpriteCellClick(sc)) // QGraphicsWidget
 		
 		}
 
@@ -69,7 +69,7 @@ func ConnectSpriteEvents(spcan *sped.SpriteCanvas) {
 func SpriteCellClick(sc *sped.SpriteCell) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
 	
 	statusbar.ShowMessage(strconv.Itoa(sc.Index), 0)
-	
+	sc.MousePressEventDefault(event)
 	
 	}
 }
