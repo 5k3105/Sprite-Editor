@@ -1,5 +1,5 @@
 # Sprite-Editor
-Working (slow)
+Working
 
 To run:
 
