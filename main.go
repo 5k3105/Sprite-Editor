@@ -62,15 +62,17 @@ func ConnectSpriteEvents(spcan *sped.SpriteCanvas) {
 	for it.Next() {
 		sc := it.Value().(*sped.SpriteCell)
 		
-		sc.ConnectMousePressEvent(SpriteCellClick(sc)) // QGraphicsWidget
+		sc.ConnectMousePressEvent(SpriteCellClick(sc, spcan)) // QGraphicsWidget
 		
 		}
 	}
 
 
-func SpriteCellClick(sc *sped.SpriteCell) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
+func SpriteCellClick(sc *sped.SpriteCell, spcan *sped.SpriteCanvas) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
 	
 	sc.R, sc.G, sc.B = r,g,b
+	spcan.Scene.Update(spcan.Scene.ItemsBoundingRect())
+	
 	statusbar.ShowMessage(strconv.Itoa(sc.Index), 0)
 	sc.MousePressEventDefault(event)
 	
