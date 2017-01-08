@@ -6,7 +6,8 @@ import (
 	"bytes"
 	"github.com/virtao/GoTypeBytes"
 	"strconv"
-
+	
+	"github.com/emirpasic/gods/maps/treemap"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
@@ -15,7 +16,8 @@ import (
 
 type FcpCanvas struct {
 	Scene 		*widgets.QGraphicsScene
-	View  		*widgets.QGraphicsView	
+	View  		*widgets.QGraphicsView
+	Pallete 	*FullColorPallete
 	}
 
 type FullColorPallete struct {
@@ -23,13 +25,14 @@ type FullColorPallete struct {
 	filename 	string
 	pal			*pallete
 	over		bool
+	Cells		*treemap.Map
 	}
 
 type FcpCell struct {
 	*widgets.QGraphicsWidget
-	index		int
+	Index		int
 	over		bool
-	r, g, b		int
+	R, G, B		int
 	}
 
 type pallete struct {
@@ -41,6 +44,7 @@ func NewFcpCanvas() *FcpCanvas {
 	fcpcan := &FcpCanvas{
 		Scene: 		widgets.NewQGraphicsScene(nil),
 		View: 		widgets.NewQGraphicsView(nil),
+		Pallete: 	NewFullColorPallete(),
 		}
 	
 	fcpcan.Scene.ConnectKeyPressEvent(fcpcan.keyPressEvent)
@@ -48,7 +52,7 @@ func NewFcpCanvas() *FcpCanvas {
 	
 	fcpcan.View.ConnectResizeEvent(fcpcan.resizeEvent)
 	
-	fcpcan.Scene.AddItem(NewFullColorPallete())
+	fcpcan.Scene.AddItem(fcpcan.Pallete.QGraphicsWidget)
 	fcpcan.View.SetScene(fcpcan.Scene)
 
 	fcpcan.View.Show()
@@ -57,11 +61,12 @@ func NewFcpCanvas() *FcpCanvas {
 	
 	}
 
-func NewFullColorPallete() *widgets.QGraphicsWidget {
+func NewFullColorPallete() *FullColorPallete {
 
 	cp := &FullColorPallete{
-		QGraphicsWidget: widgets.NewQGraphicsWidget(nil, 0), // se, 0) type widget
-		filename: "C:/800.pal",
+		QGraphicsWidget: 	widgets.NewQGraphicsWidget(nil, 0), // se, 0) type widget
+		filename: 			"C:/800.pal",
+		Cells:				treemap.NewWithIntComparator(),
 		}
 
 	cp.SetSizePolicy2(widgets.QSizePolicy__Expanding, widgets.QSizePolicy__Expanding, 1) // Fixed Expanding
@@ -90,24 +95,25 @@ func NewFullColorPallete() *widgets.QGraphicsWidget {
 	
 	for i := 0; i < y; i++ {
 		for j := 0; j < x; j++ {
-				c1 := NewFcpCell(cp, z)
-				layout.AddItem2(c1, i, j, 1) // align left
+				fcell := NewFcpCell(cp, z)
+				cp.Cells.Put(z, fcell)
+				layout.AddItem2(fcell, i, j, 1) // align left
 				z = z + 1
 		}
 	}
 
 	cp.SetLayout(layout)
-	return cp.QGraphicsWidget
+	return cp
 }
 
-func NewFcpCell(cp *FullColorPallete, idx int) *widgets.QGraphicsWidget {
+func NewFcpCell(cp *FullColorPallete, idx int) *FcpCell {
 
 	fc := &FcpCell {
 		QGraphicsWidget: widgets.NewQGraphicsWidget(nil, 0), //cp, 0) // type widget
-		index: idx,
-		r: cp.pal.r[idx], 
-		g: cp.pal.g[idx], 
-		b: cp.pal.b[idx],
+		Index: idx,
+		R: cp.pal.r[idx], 
+		G: cp.pal.g[idx], 
+		B: cp.pal.b[idx],
 		}
 
 	fc.SetAcceptHoverEvents(true)
@@ -115,7 +121,7 @@ func NewFcpCell(cp *FullColorPallete, idx int) *widgets.QGraphicsWidget {
 	fc.ConnectHoverEnterEvent(fc.HoverEnter)
 	fc.ConnectHoverLeaveEvent(fc.HoverLeave)
 
-	return fc.QGraphicsWidget
+	return fc
 }
 
 // fcp cell
@@ -126,7 +132,7 @@ func (fc *FcpCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem, w
 
 	var qpf = core.NewQPointF3(1.0, 1.0)
 
-	color := gui.NewQColor3(fc.r, fc.g, fc.b, 255) // r, g, b, a
+	color := gui.NewQColor3(fc.R, fc.G, fc.B, 255) // r, g, b, a
 	var brush = gui.NewQBrush3(color, 1)
 	
 	var path = gui.NewQPainterPath()
@@ -139,11 +145,11 @@ func (fc *FcpCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem, w
 
 	if fc.over {
 
-		p.DrawText(qpf, "r"+strconv.Itoa(fc.r)+"g"+strconv.Itoa(fc.g)+"b"+strconv.Itoa(fc.b))
+		p.DrawText(qpf, "r"+strconv.Itoa(fc.R)+"g"+strconv.Itoa(fc.G)+"b"+strconv.Itoa(fc.B))
 
 	} else {
 
-		p.DrawText(qpf, strconv.Itoa(fc.index))
+		p.DrawText(qpf, strconv.Itoa(fc.Index))
 
 	}
 }

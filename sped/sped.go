@@ -1,7 +1,7 @@
 package sped
 
 import(
-	"strconv"
+	//"strconv"
 	"local/spc/spritelib"
 	
 	"github.com/emirpasic/gods/maps/treemap"
@@ -26,7 +26,7 @@ type SpriteCell struct {
 	*widgets.QGraphicsWidget
 	Index		int
 	over		bool
-	r, g, b		int
+	R, G, B		int
 	}
 
 
@@ -126,7 +126,7 @@ func (sc *SpriteCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem
 
 	var qpf = core.NewQPointF3(1.0, 1.0)
 
-	color := gui.NewQColor3(sc.r, sc.g, sc.b, 50) // 255) // r, g, b, a
+	color := gui.NewQColor3(sc.R, sc.G, sc.B, 255) // 255) // r, g, b, a
 	var brush = gui.NewQBrush3(color, 1)
 	
 	var path = gui.NewQPainterPath()
@@ -138,12 +138,13 @@ func (sc *SpriteCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem
 	p.FillPath(path, brush)
 
 	if sc.over {
-
-		p.DrawText(qpf, "r"+strconv.Itoa(sc.r)+"g"+strconv.Itoa(sc.g)+"b"+strconv.Itoa(sc.b))
+		
+		p.DrawText(qpf,"")
+		//p.DrawText(qpf, "r"+strconv.Itoa(sc.R)+"g"+strconv.Itoa(sc.G)+"b"+strconv.Itoa(sc.B))
 
 	} else {
-
-		p.DrawText(qpf, strconv.Itoa(sc.Index))
+		p.DrawText(qpf,"")
+		//p.DrawText(qpf, strconv.Itoa(sc.Index))
 
 	}
 	

@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	r,g,b		int
 	statusbar 	*widgets.QStatusBar
 )
 
@@ -34,13 +35,15 @@ func main() {
 	var spcan = sped.NewSpriteCanvas() // window
 	dsped.SetWidget(spcan.View)
 	
-	//ConnectSpriteEvents(spcan)
+	ConnectSpriteEvents(spcan)
 
 	// full color pallete panel
 	var dfcp = widgets.NewQDockWidget("Full Color Pallete", window, 0)
 	window.AddDockWidget(core.Qt__RightDockWidgetArea, dfcp)
-	var palette = fcp.NewFcpCanvas() // window
-	dfcp.SetWidget(palette.View)
+	var fcpcan = fcp.NewFcpCanvas() // window
+	dfcp.SetWidget(fcpcan.View)
+	
+	ConnectFcpEvents(fcpcan)
 	
 	statusbar.ShowMessage(core.QCoreApplication_ApplicationDirPath(), 0)
 
@@ -62,16 +65,35 @@ func ConnectSpriteEvents(spcan *sped.SpriteCanvas) {
 		sc.ConnectMousePressEvent(SpriteCellClick(sc)) // QGraphicsWidget
 		
 		}
-
 	}
 
 
 func SpriteCellClick(sc *sped.SpriteCell) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
 	
+	sc.R, sc.G, sc.B = r,g,b
 	statusbar.ShowMessage(strconv.Itoa(sc.Index), 0)
 	sc.MousePressEventDefault(event)
 	
 	}
 }
 
+func ConnectFcpEvents(fcpcan *fcp.FcpCanvas) {
 	
+	it := fcpcan.Pallete.Cells.Iterator()
+	for it.Next() {
+		fc := it.Value().(*fcp.FcpCell)
+		
+		fc.ConnectMousePressEvent(ColorCellClick(fc)) // QGraphicsWidget
+		
+		}
+
+	}
+
+func ColorCellClick(fc *fcp.FcpCell) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
+	
+	r,g,b = fc.R, fc.G, fc.B
+	statusbar.ShowMessage(strconv.Itoa(fc.Index), 0)
+	fc.MousePressEventDefault(event)
+	
+	}
+}
