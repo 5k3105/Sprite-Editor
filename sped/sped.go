@@ -27,6 +27,13 @@ type SpriteCell struct {
 	Index		int
 	over		bool
 	R, G, B		int
+	
+	font  *gui.QFont
+	qpf   *core.QPointF
+	Brush *gui.QBrush
+	path  *gui.QPainterPath	
+	
+	
 	}
 
 
@@ -108,8 +115,15 @@ func NewSpriteCell(parent *SpriteEditor, idx int) *SpriteCell { //*widgets.QGrap
 	sc := &SpriteCell{
 	QGraphicsWidget: widgets.NewQGraphicsWidget(nil, 0), // parent, 0) // type widget
 	Index: idx,
-	}
 	
+		font: gui.NewQFont2("verdana", 7, 1, false),
+		qpf:  core.NewQPointF3(1.0, 1.0),
+		path: gui.NewQPainterPath(),	
+	}
+
+	var color = gui.NewQColor3(sc.R, sc.G, sc.B, 255) // r, g, b, a
+	sc.Brush = gui.NewQBrush3(color, 1)
+
 	sc.SetAcceptHoverEvents(true)
 	sc.ConnectPaint(sc.Paint)
 	sc.ConnectHoverEnterEvent(sc.HoverEnter)
@@ -121,32 +135,54 @@ func NewSpriteCell(parent *SpriteEditor, idx int) *SpriteCell { //*widgets.QGrap
 // sprite cell
 func (sc *SpriteCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem, w *widgets.QWidget) {
 
-	var font = gui.NewQFont2("verdana", 7, 1, false)
-	p.SetFont(font)
 
-	var qpf = core.NewQPointF3(1.0, 1.0)
+	if sc.path.IsEmpty() {
+		sc.path.AddRect(core.NewQRectF5(o.Rect())) //will only be called once, with the first paint event (as the painter is always the same for each cell)
+	}
 
-	color := gui.NewQColor3(sc.R, sc.G, sc.B, 255) // 255) // r, g, b, a
-	var brush = gui.NewQBrush3(color, 1)
-	
-	var path = gui.NewQPainterPath()
-	
-	rf := core.NewQRectF5(o.Rect())
-	path.AddRect(rf)
-	
-	p.DrawPath(path)
-	p.FillPath(path, brush)
+	p.SetFont(sc.font)
+	p.DrawPath(sc.path)
+	p.FillPath(sc.path, sc.Brush)
 
 	if sc.over {
-		
-		p.DrawText(qpf,"")
+
+		p.DrawText(sc.qpf, "")
 		//p.DrawText(qpf, "r"+strconv.Itoa(sc.R)+"g"+strconv.Itoa(sc.G)+"b"+strconv.Itoa(sc.B))
 
 	} else {
-		p.DrawText(qpf,"")
+		p.DrawText(sc.qpf, "")
 		//p.DrawText(qpf, strconv.Itoa(sc.Index))
 
 	}
+
+
+
+	//var font = gui.NewQFont2("verdana", 7, 1, false)
+	//p.SetFont(font)
+
+	//var qpf = core.NewQPointF3(1.0, 1.0)
+
+	//color := gui.NewQColor3(sc.R, sc.G, sc.B, 255) // 255) // r, g, b, a
+	//var brush = gui.NewQBrush3(color, 1)
+	
+	//var path = gui.NewQPainterPath()
+	
+	//rf := core.NewQRectF5(o.Rect())
+	//path.AddRect(rf)
+	
+	//p.DrawPath(path)
+	//p.FillPath(path, brush)
+
+	//if sc.over {
+		
+		//p.DrawText(qpf,"")
+		////p.DrawText(qpf, "r"+strconv.Itoa(sc.R)+"g"+strconv.Itoa(sc.G)+"b"+strconv.Itoa(sc.B))
+
+	//} else {
+		//p.DrawText(qpf,"")
+		////p.DrawText(qpf, strconv.Itoa(sc.Index))
+
+	//}
 	
 }
 

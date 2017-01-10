@@ -33,6 +33,12 @@ type FcpCell struct {
 	Index		int
 	over		bool
 	R, G, B		int
+	
+	font  *gui.QFont
+	qpf   *core.QPointF
+	brush *gui.QBrush
+	path  *gui.QPainterPath
+	
 	}
 
 type pallete struct {
@@ -114,7 +120,14 @@ func NewFcpCell(cp *FullColorPallete, idx int) *FcpCell {
 		R: cp.pal.r[idx], 
 		G: cp.pal.g[idx], 
 		B: cp.pal.b[idx],
+		
+		font: gui.NewQFont2("verdana", 7, 1, false),
+		qpf:  core.NewQPointF3(1.0, 1.0),
+		path: gui.NewQPainterPath(),		
 		}
+
+	var color = gui.NewQColor3(fc.R, fc.G, fc.B, 255) // r, g, b, a
+	fc.brush = gui.NewQBrush3(color, 1)
 
 	fc.SetAcceptHoverEvents(true)
 	fc.ConnectPaint(fc.Paint)
@@ -127,32 +140,54 @@ func NewFcpCell(cp *FullColorPallete, idx int) *FcpCell {
 // fcp cell
 func (fc *FcpCell) Paint(p *gui.QPainter, o *widgets.QStyleOptionGraphicsItem, w *widgets.QWidget) {
 
-	var font = gui.NewQFont2("verdana", 7, 1, false)
-	p.SetFont(font)
 
-	var qpf = core.NewQPointF3(1.0, 1.0)
+	if fc.path.IsEmpty() {
+		fc.path.AddRect(core.NewQRectF5(o.Rect()))
+	}
 
-	color := gui.NewQColor3(fc.R, fc.G, fc.B, 255) // r, g, b, a
-	var brush = gui.NewQBrush3(color, 1)
-	
-	var path = gui.NewQPainterPath()
-	
-	rf := core.NewQRectF5(o.Rect())
-	path.AddRect(rf)
-	
-	p.DrawPath(path)
-	p.FillPath(path, brush)
+	p.SetFont(fc.font)
+	p.DrawPath(fc.path)
+	p.FillPath(fc.path, fc.brush)
 
 	if fc.over {
 
-		p.DrawText(qpf, "r"+strconv.Itoa(fc.R)+"g"+strconv.Itoa(fc.G)+"b"+strconv.Itoa(fc.B))
+		p.DrawText(fc.qpf, "r"+strconv.Itoa(fc.R)+"g"+strconv.Itoa(fc.G)+"b"+strconv.Itoa(fc.B))
 
 	} else {
 
-		p.DrawText(qpf, strconv.Itoa(fc.Index))
+		p.DrawText(fc.qpf, strconv.Itoa(fc.Index))
 
 	}
 }
+
+
+
+	//var font = gui.NewQFont2("verdana", 7, 1, false)
+	//p.SetFont(font)
+
+	//var qpf = core.NewQPointF3(1.0, 1.0)
+
+	//color := gui.NewQColor3(fc.R, fc.G, fc.B, 255) // r, g, b, a
+	//var brush = gui.NewQBrush3(color, 1)
+	
+	//var path = gui.NewQPainterPath()
+	
+	//rf := core.NewQRectF5(o.Rect())
+	//path.AddRect(rf)
+	
+	//p.DrawPath(path)
+	//p.FillPath(path, brush)
+
+	//if fc.over {
+
+		//p.DrawText(qpf, "r"+strconv.Itoa(fc.R)+"g"+strconv.Itoa(fc.G)+"b"+strconv.Itoa(fc.B))
+
+	//} else {
+
+		//p.DrawText(qpf, strconv.Itoa(fc.Index))
+
+	//}
+//}
 
 func (fc *FcpCell) HoverEnter(e *widgets.QGraphicsSceneHoverEvent) {
 	fc.over = true

@@ -6,6 +6,8 @@ import (
 	
 	"local/spc/fcp"
 	"local/spc/sped"
+	
+	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/widgets"
 )
@@ -71,6 +73,9 @@ func ConnectSpriteEvents(spcan *sped.SpriteCanvas) {
 func SpriteCellClick(sc *sped.SpriteCell, spcan *sped.SpriteCanvas) func (event *widgets.QGraphicsSceneMouseEvent){ return func (event *widgets.QGraphicsSceneMouseEvent) {
 	
 	sc.R, sc.G, sc.B = r,g,b
+	var color = gui.NewQColor3(sc.R, sc.G, sc.B, 255) // r, g, b, a
+	sc.Brush.SetColor(color)	
+	
 	spcan.Scene.Update(spcan.Scene.ItemsBoundingRect())
 	
 	statusbar.ShowMessage(strconv.Itoa(sc.Index), 0)
